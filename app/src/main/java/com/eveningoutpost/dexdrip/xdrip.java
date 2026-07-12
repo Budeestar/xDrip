@@ -22,6 +22,7 @@ import com.eveningoutpost.dexdrip.utilitymodels.BgGraphBuilder;
 import com.eveningoutpost.dexdrip.utilitymodels.CollectionServiceStarter;
 import com.eveningoutpost.dexdrip.utilitymodels.ColorCache;
 import com.eveningoutpost.dexdrip.utilitymodels.IdempotentMigrations;
+import com.eveningoutpost.dexdrip.utilitymodels.MyCureMateDefaults;
 import com.eveningoutpost.dexdrip.utilitymodels.PlusAsyncExecutor;
 import com.eveningoutpost.dexdrip.utilitymodels.Pref;
 import com.eveningoutpost.dexdrip.utilitymodels.VersionTracker;
@@ -97,6 +98,8 @@ public class xdrip extends Application {
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_defaults, true);
         PreferenceManager.setDefaultValues(this, R.xml.xdrip_plus_prefs, true);
         ColorCache.setDefaultsLoaded();
+
+        MyCureMateDefaults.applyIfNeeded();
 
         checkForcedEnglish(xdrip.context);
 
