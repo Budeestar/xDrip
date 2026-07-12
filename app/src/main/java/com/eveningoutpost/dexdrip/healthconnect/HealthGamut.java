@@ -108,6 +108,7 @@ public class HealthGamut {
     static {
         recordList.add(createKotlinClass(StepsRecord.class));
         recordList.add(createKotlinClass(HeartRateRecord.class));
+        recordList.add(createKotlinClass(BloodGlucoseRecord.class));
     }
 
     private static final Set<String> permissions = new HashSet<>(Arrays.asList(fullPermissionList));
@@ -275,6 +276,7 @@ public class HealthGamut {
                             token = result.getNextChangesToken();
                             reply.stepsRecords = new LinkedList<>();
                             reply.heartRateRecords = new LinkedList<>();
+                            reply.bloodGlucoseRecords = new LinkedList<>();
                             int ups = 0;
                             for (Change change : result.getChanges()) {
                                 if (change instanceof UpsertionChange) {
@@ -286,6 +288,9 @@ public class HealthGamut {
                                     }
                                     if (record instanceof HeartRateRecord) {
                                         reply.heartRateRecords.add((HeartRateRecord) record);
+                                    }
+                                    if (record instanceof BloodGlucoseRecord) {
+                                        reply.bloodGlucoseRecords.add((BloodGlucoseRecord) record);
                                     }
                                 } else {
                                     Log.d(TAG, "Unhandled change record of type: " + change.getClass().getSimpleName());

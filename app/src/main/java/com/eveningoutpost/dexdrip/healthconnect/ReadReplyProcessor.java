@@ -3,9 +3,13 @@ package com.eveningoutpost.dexdrip.healthconnect;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.health.connect.client.records.BloodGlucoseRecord;
+import androidx.health.connect.client.units.BloodGlucose;
 
+import com.eveningoutpost.dexdrip.models.BgReading;
 import com.eveningoutpost.dexdrip.models.HeartRate;
 import com.eveningoutpost.dexdrip.models.JoH;
+import com.eveningoutpost.dexdrip.models.Sensor;
 import com.eveningoutpost.dexdrip.models.StepCounter;
 import com.eveningoutpost.dexdrip.models.UserError;
 
@@ -40,5 +44,20 @@ public class ReadReplyProcessor {
                 }
             }
         }
+
+        if (dataReply.bloodGlucoseRecords != null) {
+            for (val item : dataReply.bloodGlucoseRecords) {
+                BloodGlucose level = item.getLevel();
+                double mgDl = level.getMilligramsPerDeciliter();
+                long timestamp = item.getTime().toEpochMilli();
+                UserError.Log.d(TAG, "blood glucose: " + JoH.dateTimeText(timestamp) + " mg/dL:" + mgDl);
+                ensureSensorActive();
+                BgReading.bgReadingInsertFromG5(mgDl, timestamp, "HealthConnect");
+            }
+        }
+    }
+
+    private static void ensureSensorActive() {
+        Sensor.createDefaultIfMissing();
     }
 }

@@ -2,6 +2,7 @@ package com.eveningoutpost.dexdrip.healthconnect;
 
 import static com.eveningoutpost.dexdrip.models.JoH.defaultGsonInstance;
 
+import androidx.health.connect.client.records.BloodGlucoseRecord;
 import androidx.health.connect.client.records.HeartRateRecord;
 import androidx.health.connect.client.records.StepsRecord;
 
@@ -16,6 +17,8 @@ public class DataReply {
     public List<StepsRecord> stepsRecords;
     @Expose
     public List<HeartRateRecord> heartRateRecords;
+    @Expose
+    public List<BloodGlucoseRecord> bloodGlucoseRecords;
 
     public static DataReply fromJson(final String json) {
         return defaultGsonInstance().fromJson(json, DataReply.class);
