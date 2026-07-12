@@ -88,7 +88,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.eveningoutpost.dexdrip"
+        applicationId "com.chronosync.mycuremate.xdrip"
         minSdkVersion 24
         // increasing target SDK version can cause compatibility issues with Android 7+
         //noinspection ExpiredTargetSdkVersion
@@ -106,9 +106,9 @@ android {
         multiDexEnabled false
 
         // To get a Google Maps API key, follow this link, follow the directions and press "Create" at the end:
-        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.eveningoutpost.dexdrip
+        // https://console.developers.google.com/flows/enableapi?apiid=maps_android_backend&keyType=CLIENT_SIDE_ANDROID&r=7C:1E:BB:15:CE:A1:92:30:47:9D:D0:3D:89:F6:C6:51:7D:3C:1B:DD%3Bcom.chronosync.mycuremate.xdrip
         manifestPlaceholders = [google_maps_key:getLocalProperty('google_maps_key'),
-                                'appAuthRedirectScheme': 'xdrip',
+                                'appAuthRedirectScheme': 'mycurematexdrip',
                                 appId: applicationId
         ]
     }
@@ -426,4 +426,6 @@ tasks.withType(Test) {
     }
 }
 
-apply plugin: 'com.google.gms.google-services'
+if (!project.hasProperty('skipGoogleServices')) {
+    apply plugin: 'com.google.gms.google-services'
+}

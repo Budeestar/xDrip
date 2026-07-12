@@ -204,6 +204,19 @@ public class NightscoutUploader {
         return !(vers.startsWith("0.8") || vers.startsWith("0.7") || vers.startsWith("0.6"));
     }
 
+    /**
+     * Hash the Nightscout API secret for the api-secret header. If the secret is already a
+     * 40-character hex string (MyCureMate companion token format), use it as-is so users can
+     * paste the token shown in the MyCureMate app directly into xDrip+.
+     */
+    private static String hashSecret(String secret) {
+        if (secret == null) return null;
+        if (secret.matches("^[a-fA-F0-9]{40}$")) {
+            return secret.toLowerCase();
+        }
+        return Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+    }
+
     public static String getNightscoutVersion(String url) {
         try {
             final String store_marker = "nightscout-status-poll-" + url;
@@ -405,7 +418,7 @@ public class NightscoutUploader {
                 }
 
                 if (apiVersion == 1) {
-                    final String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    final String hashedSecret = hashSecret(secret);
                     final Response<ResponseBody> r;
                     if (hashedSecret != null) {
                         doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
@@ -506,7 +519,7 @@ public class NightscoutUploader {
                 final NightscoutService nightscoutService = retrofit.create(NightscoutService.class);
 
                 if (apiVersion == 1) {
-                    String hashedSecret = Hashing.sha1().hashBytes(secret.getBytes(Charsets.UTF_8)).toString();
+                    String hashedSecret = hashSecret(secret);
                     doStatusUpdate(nightscoutService, retrofit.baseUrl().url().toString(), hashedSecret); // update status if needed
                     doRESTUploadTo(nightscoutService, hashedSecret, glucoseDataSets, meterRecords, calRecords, tups, THIS_QUEUE);
                 } else {

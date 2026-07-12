@@ -1,3 +1,47 @@
+# MyCureMate xDrip (Android)
+
+This is a fork of [xDrip+](https://github.com/NightscoutFoundation/xDrip) for the MyCureMate / Chronosync ecosystem. It uploads Dexcom / Libre / Stelo readings to the MyCureMate curemate backend via Nightscout-compatible REST API.
+
+## Quick start for MyCureMate
+
+1. Build and install the APK on your Android phone (see **Build** below).
+2. Pair your sensor in xDrip as usual.
+3. In xDrip: **Settings → Cloud Upload → Nightscout (REST-API)**
+   - Enable **API v1.x**
+   - **Base URL**: `http://<your-backend-ip>:8000/api/v1/`
+   - **API Secret**: paste the **CGM token** shown in MyCureMate app → Settings → CGM Integration
+4. Tap **Test credentials**. If the backend is reachable, uploads start automatically.
+
+### Why paste the token as API Secret?
+
+The MyCureMate token is already a 40-character SHA1 hex string. This fork detects that format and sends it as-is in the `api-secret` header, so it matches the token stored in the curemate backend.
+
+## Build (local debug APK for Realme / Android)
+
+Requires Java 17 and Android SDK. Set the environment before building:
+
+```bash
+export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export ANDROID_HOME=/Users/nithin/Library/Android/sdk
+export PATH="$PATH:$ANDROID_HOME/platform-tools:$ANDROID_HOME/cmdline-tools/latest/bin"
+
+cd /Users/nithin/Downloads/experiments/chronosync/xdripandroid
+./gradlew assembleDebug -PskipGoogleServices
+
+# APK is built for the fastDebug variant:
+adb install app/build/outputs/apk/fast/debug/app-fast-debug.apk
+```
+
+`-PskipGoogleServices` is needed because the bundled `google-services.json` is for the original `com.eveningoutpost.dexdrip` package, and we changed the application ID to `com.chronosync.mycuremate.xdrip` so this fork can install alongside the official xDrip+.
+
+## What changed from upstream xDrip+
+
+- `app/build.gradle`: applicationId → `com.chronosync.mycuremate.xdrip`
+- `app/src/main/res/values/internal.xml`: app name → `MyCureMate xDrip`
+- `app/src/main/java/com/eveningoutpost/dexdrip/utilitymodels/NightscoutUploader.java`: if the API secret is a 40-character hex token, send it without re-hashing.
+
+---
+
 # Nightscout xDrip
 > Enhanced personal research version of xDrip
 
