@@ -337,22 +337,40 @@ public class HealthGamut {
                         }
                         reply.heartRateRecords = result2.getRecords();
 
+                        client.readRecords(new ReadRecordsRequest<BloodGlucoseRecord>(createKotlinClass(BloodGlucoseRecord.class),
+                                TimeRangeFilter.between(startTime, endTime),
+                                Collections.emptySet(),
+                                false,
+                                1000,
+                                null), coroutines.getContinuation((result3, throwable3) -> {
+
+                            try {
+                                if (throwable3 != null) {
+                                    throw new RuntimeException(throwable3);
+                                }
+                                reply.bloodGlucoseRecords = result3.getRecords();
+
+                                ReadReplyProcessor.process(reply);
+
+                                client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
+                                        coroutines.getContinuation((tokenResult, throwable4) -> {
+                                            if (throwable4 != null) {
+                                                throw new RuntimeException(throwable4);
+                                            }
+
+                                            Log.d(TAG, "Changes token: " + tokenResult);
+                                            token = tokenResult;
+                                        }));
+
+                            } catch (Exception e) {
+                                Log.e(TAG, "Failed to read blood glucose records: " + e);
+                            }
+                        }));
+
                     } catch (Exception e) {
                         Log.e(TAG, "Failed to read hr records: " + e);
                     }
                 }));
-
-                ReadReplyProcessor.process(reply);
-
-                client.getChangesToken(new ChangesTokenRequest(records, new HashSet<>()),
-                        coroutines.getContinuation((tokenResult, throwable3) -> {
-                            if (throwable3 != null) {
-                                throw new RuntimeException(throwable3);
-                            }
-
-                            Log.d(TAG, "Changes token: " + tokenResult);
-                            token = tokenResult;
-                        }));
 
 
             } catch (Exception e) {
